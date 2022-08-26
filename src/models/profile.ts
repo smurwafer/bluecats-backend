@@ -7,6 +7,7 @@ interface ProfileAttr {
     theme: string;
     bio: string;
     age: number;
+    gender: string;
     interests: string[];
 }
 
@@ -21,6 +22,7 @@ interface ProfileDoc extends mongoose.Document {
     theme: string;
     bio: string;
     age: number;
+    gender: string;
     interests: string[];
 }
 
@@ -49,6 +51,10 @@ const profileSchema = new mongoose.Schema({
     },
     age: {
         type: Number,
+        required: false,
+    },
+    gender: {
+        type: String,
         required: false,
     },
     interests: [{

@@ -9,11 +9,13 @@ Router.post('/api/follow', requireAuth, async (req: Request, res: Response, next
     try {
         const { followed } = req.body;
 
+        const userId = req.currentUser?.id as string;
+
         const existingFollow = await Follow.findOne({
             $or: [
                 {
                     follower: followed,
-                    followed: req.currentUser?.id
+                    followed: userId
                 }
             ]
         });
@@ -22,7 +24,7 @@ Router.post('/api/follow', requireAuth, async (req: Request, res: Response, next
 
         if (existingFollow) {
             const contact = Contact.build({
-                userA: req.currentUser?.id as string,
+                userA: userId,
                 userB: followed,
             });
 
@@ -32,7 +34,7 @@ Router.post('/api/follow', requireAuth, async (req: Request, res: Response, next
         }
     
         const follow = Follow.build({
-            follower: req.currentUser?.id as string,
+            follower: userId,
             followed,
         });
     

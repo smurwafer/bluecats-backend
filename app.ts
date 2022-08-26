@@ -44,6 +44,11 @@ import { VoteCreateRouter } from './src/routes/vote/create';
 import { VoteDeleteRouter } from './src/routes/vote/delete';
 import { VoteShowRouter } from './src/routes/vote/show';
 
+import { LikeCreateRoute } from './src/routes/like/create';
+import { LikeDeleteRoute } from './src/routes/like/delete';
+import { LikeIndexRoute } from './src/routes/like';
+import { LikeShowRoute } from './src/routes/like/show';
+
 import { CommentCreateRouter } from './src/routes/comment/create';
 import { CommentUpdateRouter } from './src/routes/comment/update';
 import { CommentDeleteRouter } from './src/routes/comment/delete';
@@ -155,6 +160,11 @@ app.use(DashboardDeleteRouter);
 app.use(VoteCreateRouter);
 app.use(VoteDeleteRouter);
 app.use(VoteShowRouter);
+
+app.use(LikeIndexRoute);
+app.use(LikeShowRoute);
+app.use(LikeCreateRoute);
+app.use(LikeDeleteRoute);
 
 app.use(CommentCreateRouter);
 app.use(CommentUpdateRouter);
