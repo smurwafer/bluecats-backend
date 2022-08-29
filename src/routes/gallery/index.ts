@@ -5,7 +5,7 @@ import { Gallery } from '../../models/gallery';
 
 const Router = express.Router();
 
-Router.get('/api/gallery', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+Router.get('/api/gallery', async (req: Request, res: Response, next: NextFunction) => {
     const galleries = await Gallery.find();
 
     res.status(200).send({

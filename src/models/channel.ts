@@ -4,7 +4,8 @@ export interface ChannelAttr {
     name: string;
     description: string;
     type: string;
-    gallery: string[];
+    photo: string;
+    theme: string;
     hashtags: string[];
     holders: string[];
 };
@@ -17,7 +18,8 @@ interface ChannelDoc extends mongoose.Document {
     name: string;
     description: string;
     type: string;
-    gallery: string[];
+    photo: string;
+    theme: string;
     hashtags: string[];
     holders: string[];
 };
@@ -35,11 +37,16 @@ const channelSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    gallery: [{
+    photo: {
         type: String,
         ref: 'Gallery',
         required: false,
-    }],
+    },
+    theme: {
+        type: String,
+        ref: 'Gallery',
+        required: false,
+    },
     hashtags: [{
         type: String,
         required: false,

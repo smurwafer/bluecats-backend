@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 
 interface ProfileAttr {
     name: string;
-    phone: string;
     photo: string;
     theme: string;
     bio: string;
@@ -17,7 +16,6 @@ interface ProfileModel extends mongoose.Model<ProfileDoc> {
 
 interface ProfileDoc extends mongoose.Document {
     name: string;
-    phone: string;
     photo: string;
     theme: string;
     bio: string;
@@ -28,10 +26,6 @@ interface ProfileDoc extends mongoose.Document {
 
 const profileSchema = new mongoose.Schema({
     name: {
-        type: String,
-        required: false,
-    },
-    phone: {
         type: String,
         required: false,
     },

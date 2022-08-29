@@ -9,9 +9,6 @@ const validator = [
         .not()
         .isEmpty()
         .withMessage('Type should not be empty'),
-    body('gallery')
-        .isLength({ min: 1 })
-        .withMessage('Atleast 1 gallery item must be added'),
     body('holders')
         .isLength({ min: 1 })
         .withMessage('Atleast 1 holder must be added'),

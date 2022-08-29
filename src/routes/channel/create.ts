@@ -8,10 +8,10 @@ const Router = express.Router();
 
 Router.post('/api/channel', requireAuth, ChannelValidator, validateRequest, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { name, description, type, hashtags, gallery, holders } = req.body;
+        const { name, description, type, hashtags, photo, theme, holders } = req.body;
 
         const channel = Channel.build({
-            name, description, type, hashtags, gallery, holders, 
+            name, description, type, hashtags, photo, theme, holders, 
         });
 
         await channel.save();

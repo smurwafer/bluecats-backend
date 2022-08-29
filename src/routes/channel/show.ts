@@ -8,7 +8,7 @@ Router.get('/api/channel/:id', requireAuth, async (req: Request, res: Response, 
     try {
         const id = req.params.id;
         const channel = await Channel.findById(id)
-            .populate('gallery')
+            .populate('photo').populate('theme')
             .populate({
                 path: 'holders',
                 populate: {

@@ -1,6 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { requireAuth } from '../../middlewares/require-auth';
-import { Profile } from '../../models/profile';
 import { User } from '../../models/user';
 
 const Router = express.Router();
@@ -39,7 +38,16 @@ Router.get('/api/current-user', requireAuth, async (req: Request, res: Response,
         }
 
         const id = req.currentUser.id;
-        const currentUser = await User.findById(id).populate('profile');
+        const currentUser = await User.findById(id).populate({
+            path: 'profile',
+            populate: [{
+                path: 'photo',
+                model: 'Gallery',
+            }, {
+                path: 'theme',
+                model: 'Gallery',
+            }]
+        });
 
         if (!currentUser) {
             throw new Error("No such user exists!");

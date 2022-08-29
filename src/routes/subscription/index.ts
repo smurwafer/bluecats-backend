@@ -60,7 +60,10 @@ Router.get('/api/user-subscriptions/:id', requireAuth, async (req: Request, res:
             .populate({
                 path: 'channel',
                 populate: [{
-                    path: 'gallery', 
+                    path: 'photo', 
+                    model: 'Gallery',
+                }, {
+                    path: 'theme',
                     model: 'Gallery',
                 }, {
                     path: 'holders',

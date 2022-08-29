@@ -21,10 +21,10 @@ Router.put('/api/channel/:id', requireAuth, ChannelValidator, validateRequest, a
             throw new Error('Not authorized!');
         }
 
-        const { name, description, type, hashtags, gallery, holders } = req.body;
+        const { name, description, type, hashtags, photo, theme, holders } = req.body;
 
         channel.set({
-            name, description, type, hashtags, gallery, holders, 
+            name, description, type, hashtags, photo, theme, holders, 
         });
 
         await channel.save();

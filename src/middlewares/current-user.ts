@@ -19,9 +19,7 @@ const currentUser = (req: Request, res: Response, next: NextFunction) => {
     try {
         const authHeader = req.get('Authorization');
 
-        
         if (!authHeader) {
-            // console.log('No authorization header');
             return next();
         }
         
@@ -29,20 +27,14 @@ const currentUser = (req: Request, res: Response, next: NextFunction) => {
         
         const secretKey = process.env.JWT_SECRET_KEY as string;
         const decodedToken = jwt.verify(token, secretKey) as UserPayload;
-        
-        console.log(token);
-
+    
         if (!decodedToken) {
-            // console.log('No token found!');
             return next();
         }
 
-        console.log(decodedToken);
-    
         req.currentUser = decodedToken;
         next();
     } catch (err) {
-        // console.log('current user middle error : ', err);
         next(err);
     }
 }

@@ -18,17 +18,9 @@ Router.post('/api/auth/login', async (req: Request, res: Response, next: NextFun
                 api_key: process.env.NODEMAILER_API_KEY,
             }
         }));
-
-        const existingUser = await User.findOne({
-            $or: [{
-                email: userNameOrEmailOrPhone,
-            }, {
-                userName: userNameOrEmailOrPhone,
-            }, {
-                phone: userNameOrEmailOrPhone,    
-            }]
-        });
     
+        const existingUser = await User.findOne({ $or: [{ email: userNameOrEmailOrPhone }, { userName: userNameOrEmailOrPhone }, { phone : userNameOrEmailOrPhone }] });
+        
         if (!existingUser) {
             throw new Error("No such user exists!");
         }

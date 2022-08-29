@@ -39,13 +39,13 @@ Router.post('/api/auth/signup', AuthValidator, validateRequest, async (req: Requ
         const passwordHash = await bcrypt.hash(password, 12);
 
         const profile = Profile.build({
-            name, age, gender, bio, photo, theme, phone, interests,
+            name, age, gender, bio, photo, theme, interests,
         });
 
         await profile.save();
     
         const user = User.build({
-            userName, email, password: passwordHash, profile: profile.id, online: false,
+            userName, email, phone, password: passwordHash, profile: profile.id, online: false,
         });
     
         await user.save();
