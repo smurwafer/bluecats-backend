@@ -15,14 +15,10 @@ Router.put('/api/stream/:id', requireAuth, StreamValidator, validateRequest, asy
             throw new Error('Stream not found!');
         }
 
-        const { title, description, hashtags, thumbnail, gallery, channel } = req.body;
-
-        if (thumbnail >= gallery.length) {
-            throw new Error("Invalid thumbnail!");
-        }
+        const { title, description, hashtags, thumbnail, gallery, channel, live } = req.body;
 
         stream.set({
-            title, description, hashtags, thumbnail, gallery, channel
+            title, description, hashtags, thumbnail, gallery, channel, live
         });
 
         await stream.save();

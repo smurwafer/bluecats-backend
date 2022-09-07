@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+import socket from '../../../socket';
 import { requireAuth } from '../../middlewares/require-auth';
 import { validateRequest } from '../../middlewares/validate-request';
 import { Comment } from '../../models/comment';
@@ -15,6 +16,23 @@ Router.post('/api/comment', requireAuth, CommentValidator, validateRequest, asyn
         });
     
         await comment.save();
+
+        await (await comment.populate('stream')).populate({
+            path: 'commentor',
+            populate: {
+                path: 'profile',
+                model: 'Profile',
+                populate: [{
+                    path: 'photo',
+                    model: 'Gallery',
+                }, {
+                    path: 'theme',
+                    model: 'Gallery',
+                }]
+            }
+        })
+
+        socket.getIo().emit('comment', (comment));
     
         res.status(201).send({
             message: 'comment created successfully',

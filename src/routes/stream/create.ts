@@ -8,14 +8,10 @@ const Router = express.Router();
 
 Router.post('/api/stream', requireAuth, StreamValidator, validateRequest, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { title, description, type, hashtags, thumbnail, gallery, channel } = req.body;
-
-        if (thumbnail >= gallery.length) {
-            throw new Error("Invalid thumbnail!");
-        }
+        const { title, description, type, hashtags, thumbnail, gallery, channel, live } = req.body;
 
         const stream = Stream.build({
-            title, description, type, hashtags, thumbnail, gallery, channel,
+            title, description, type, hashtags, thumbnail, gallery, channel, live,
         });
 
         await stream.save();

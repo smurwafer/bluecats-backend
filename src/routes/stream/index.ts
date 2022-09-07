@@ -10,10 +10,14 @@ Router.get('/api/stream', requireAuth, async (req: Request, res: Response, next:
 
         const streams = await Stream.find({...req.query})
             .populate('gallery')
+            .populate('thumbnail')
             .populate({
                 path: 'channel',
                 populate: [{
-                    path: 'gallery',
+                    path: 'photo',
+                    model: 'Gallery',
+                }, {
+                    path: 'theme',
                     model: 'Gallery',
                 }, {
                     path: 'holders',

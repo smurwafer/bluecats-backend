@@ -22,7 +22,7 @@ Router.get('/api/comment/:id', async (req: Request, res: Response, next: NextFun
                     model: 'Gallery',
                 }]
             }
-        });
+        }).sort({ 'createdAt': 1 });
 
         res.status(200).send({
             message: 'comments fetched successfully',
