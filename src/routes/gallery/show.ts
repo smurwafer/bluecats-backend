@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+import { NotFoundError } from '../../exceptions/not-found-error';
 import { requireAuth } from '../../middlewares/require-auth';
 import { Gallery } from '../../models/gallery';
 
@@ -8,9 +9,11 @@ Router.get('/api/gallery/:id', requireAuth, async (req: Request, res: Response, 
     try {
         const id = req.params.id;
         const gallery = await Gallery.findById(id);
+
+        console.log(id);
     
         if (!gallery) {
-            throw new Error('No such gallery exists!');
+            throw new NotFoundError('No such gallery exists!');
         }
     
         res.status(200).send({

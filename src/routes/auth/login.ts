@@ -1,63 +1,50 @@
 import express, { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import nodemailer from 'nodemailer';
 import { User } from '../../models/user';
-import { Profile } from '../../models/profile';
-
-const sendGridTransport = require('nodemailer-sendgrid-transport');
+import { validateRequest } from '../../middlewares/validate-request';
+import { LoginValidator } from '../../validators/auth/login-validator';
+import { NotFoundError } from '../../exceptions/not-found-error';
+import { BadRequestError } from '../../exceptions/bad-request-error';
+import { sendMail } from '../../utility/send-mail';
 
 const Router = express.Router();
 
-Router.post('/api/auth/login', async (req: Request, res: Response, next: NextFunction) => {
+Router.post('/api/auth/login', LoginValidator, validateRequest, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, userName, password } = req.body;
-    
-        const transporter = nodemailer.createTransport(sendGridTransport({
-            auth: {
-                api_key: process.env.NODEMAILER_API_KEY,
-            }
-        }));
+        const { emailOrPhone, password } = req.body;
 
         const existingUser = await User.findOne({
             $or: [{
-                email,
+                email: emailOrPhone,
             }, {
-                userName,
+                phone: emailOrPhone,
             }]
         });
     
-        if (!existingUser) {
-            throw new Error("No such user exists!");
-        }
-
-        const existingProfile = await Profile.findById(existingUser.profile);
-
-        if (!existingProfile) {
-            throw new Error("No such profile exists!");
-        }
+        if (!existingUser)
+            throw new NotFoundError("No such user exists!");
     
         const isValid = await bcrypt.compare(password, existingUser.password);
     
-        if (!isValid) {
-            throw new Error("Password not valid!");
-        }
+        if (!isValid)
+            throw new BadRequestError("Password not valid!");
 
         const secretKey = process.env.JWT_SECRET_KEY as string;
     
-        const token = jwt.sign({ email, userName, id: existingUser.id }, secretKey, {
+        const token = jwt.sign({
+            email: existingUser.email,
+            phone: existingUser.phone,
+            isAdmin: existingUser.isAdmin,
+            id: existingUser.id
+        }, secretKey, {
             expiresIn: '24h',
         });
 
         const expiryDate = (Math.round(new Date().getTime() / 1000) + 24 * 3600) * 1000;
 
-        transporter.sendMail({
-            to: email,
-            from: 'manaskumar2808@gmail.com',
-            subject: 'Welcome to Bluecats!',
-            html: `<h1>Good to see you ${existingProfile.name}.</h1>`,
-        });
-    
+        await sendMail(existingUser);
+
         res.status(200).send({
             message: 'User logged in successfully',
             token,

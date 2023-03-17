@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GalleryDeleteRouter = void 0;
 const express_1 = __importDefault(require("express"));
+const not_found_error_1 = require("../../exceptions/not-found-error");
 const require_auth_1 = require("../../middlewares/require-auth");
 const gallery_1 = require("../../models/gallery");
 const Router = express_1.default.Router();
@@ -21,11 +22,9 @@ exports.GalleryDeleteRouter = Router;
 Router.delete('/api/gallery/:id', require_auth_1.requireAuth, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
-        const gallery = yield gallery_1.Gallery.findById(id);
-        if (!gallery) {
-            throw new Error('No such gallery exists!');
-        }
-        yield gallery_1.Gallery.findByIdAndDelete(id);
+        const gallery = yield gallery_1.Gallery.findByIdAndDelete(id);
+        if (!gallery)
+            throw new not_found_error_1.NotFoundError('No such gallery exists!');
         res.status(202).send({
             message: 'gallery deleted successfully',
             gallery,

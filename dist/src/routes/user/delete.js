@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserDeleteRouter = void 0;
 const express_1 = __importDefault(require("express"));
+const not_found_error_1 = require("../../exceptions/not-found-error");
 const require_auth_1 = require("../../middlewares/require-auth");
 const user_1 = require("../../models/user");
 const Router = express_1.default.Router();
@@ -21,17 +22,16 @@ exports.UserDeleteRouter = Router;
 Router.delete('/api/user/:id', require_auth_1.requireAuth, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
-        const user = yield user_1.User.findById(id);
+        const user = yield user_1.User.findByIdAndDelete(id);
         if (!user) {
-            throw new Error('No such user exists!');
+            throw new not_found_error_1.NotFoundError('User not found');
         }
-        yield user_1.User.findByIdAndDelete(id);
-        res.status(202).send({
-            message: 'user deleted successfully',
+        res.status(204).json({
+            message: 'User deleted successfully',
             user,
         });
     }
-    catch (err) {
-        next(err);
+    catch (error) {
+        next(error);
     }
 }));

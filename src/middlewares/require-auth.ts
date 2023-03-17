@@ -1,12 +1,15 @@
-import express, { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { Request, Response, NextFunction } from 'express';
+import { UnauthorizedError } from '../exceptions/unauthorized-error';
 
 const requireAuth = (req: Request, res: Response, next: NextFunction) => {
-    if (!req.currentUser) {
-        throw new Error("Not Authorized!");
+    try {
+        if (!req.currentUser)
+            throw new UnauthorizedError('Unauthorized user!');
+    
+        next();
+    } catch (err) {
+        next(err);
     }
-
-    next();
 }
 
 export { requireAuth };

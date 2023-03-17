@@ -1,18 +1,20 @@
 import { body } from 'express-validator';
 
 const validator = [
-    body('userName')
-        .isLength({
-            min: 2,
-            max: 20,
-        })
-        .withMessage('Username length must be between 2 and 20'),
     body('email')
-        .isEmail()
-        .withMessage('Must be a valid email address'),
+        .if(body('phone').isEmpty())
+        .notEmpty()
+        .withMessage('Email or Phone is required'),
+    body('phone')
+        .if(body('email').isEmpty())
+        .notEmpty()
+        .withMessage('Email or Phone is required'),
     body('password')
-        .isLength({ min: 7 })
-        .withMessage('Password length must be atleast 8'),
+        .notEmpty()
+        .withMessage('Password is required'),
+    body('isAdmin')
+        .notEmpty()
+        .withMessage('isAdmin is required')
 ];
 
 export { validator as AuthValidator };

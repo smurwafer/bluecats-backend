@@ -16,49 +16,40 @@ exports.LoginRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const nodemailer_1 = __importDefault(require("nodemailer"));
 const user_1 = require("../../models/user");
-const profile_1 = require("../../models/profile");
-const sendGridTransport = require('nodemailer-sendgrid-transport');
+const validate_request_1 = require("../../middlewares/validate-request");
+const login_validator_1 = require("../../validators/auth/login-validator");
+const not_found_error_1 = require("../../exceptions/not-found-error");
+const bad_request_error_1 = require("../../exceptions/bad-request-error");
+const send_mail_1 = require("../../utility/send-mail");
 const Router = express_1.default.Router();
 exports.LoginRouter = Router;
-Router.post('/api/auth/login', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+Router.post('/api/auth/login', login_validator_1.LoginValidator, validate_request_1.validateRequest, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { email, userName, password } = req.body;
-        const transporter = nodemailer_1.default.createTransport(sendGridTransport({
-            auth: {
-                api_key: process.env.NODEMAILER_API_KEY,
-            }
-        }));
+        const { emailOrPhone, password } = req.body;
         const existingUser = yield user_1.User.findOne({
             $or: [{
-                    email,
+                    email: emailOrPhone,
                 }, {
-                    userName,
+                    phone: emailOrPhone,
                 }]
         });
-        if (!existingUser) {
-            throw new Error("No such user exists!");
-        }
-        const existingProfile = yield profile_1.Profile.findById(existingUser.profile);
-        if (!existingProfile) {
-            throw new Error("No such profile exists!");
-        }
+        if (!existingUser)
+            throw new not_found_error_1.NotFoundError("No such user exists!");
         const isValid = yield bcryptjs_1.default.compare(password, existingUser.password);
-        if (!isValid) {
-            throw new Error("Password not valid!");
-        }
+        if (!isValid)
+            throw new bad_request_error_1.BadRequestError("Password not valid!");
         const secretKey = process.env.JWT_SECRET_KEY;
-        const token = jsonwebtoken_1.default.sign({ email, id: existingUser.id }, secretKey, {
+        const token = jsonwebtoken_1.default.sign({
+            email: existingUser.email,
+            phone: existingUser.phone,
+            isAdmin: existingUser.isAdmin,
+            id: existingUser.id
+        }, secretKey, {
             expiresIn: '24h',
         });
         const expiryDate = (Math.round(new Date().getTime() / 1000) + 24 * 3600) * 1000;
-        transporter.sendMail({
-            to: email,
-            from: 'manaskumar2808@gmail.com',
-            subject: 'Welcome to Bluecats!',
-            html: `<h1>Good to see you ${existingProfile.name}.</h1>`,
-        });
+        yield (0, send_mail_1.sendMail)(existingUser);
         res.status(200).send({
             message: 'User logged in successfully',
             token,

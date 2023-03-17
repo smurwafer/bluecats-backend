@@ -27,24 +27,17 @@ Router.post('/api/gallery', require_auth_1.requireAuth, (req, res, next) => __aw
     try {
         const { caption, type, url } = req.body;
         let modifiedType = gallery_type_1.GalleryType.IMAGE;
-        let imageUrl = "", videoUrl = "", isResourceUrl = false;
-        if (url && url.trim().length > 0) {
-            isResourceUrl = true;
-            if (type == 'video') {
-                videoUrl = url;
-            }
-            else {
-                imageUrl = url;
-            }
-        }
+        let URL, isResourceUrl = false;
+        if (url && url.trim().length > 0)
+            URL = url, isResourceUrl = true;
         if (type === 'video') {
             modifiedType = gallery_type_1.GalleryType.VIDEO;
             if (req.files && req.files.length > 0) {
                 const file = req.files[0];
                 isResourceUrl = false;
-                videoUrl = file.path;
+                URL = file.path;
                 const result = yield (0, s3_1.uploadFile)(file);
-                videoUrl = 'videos/' + result.Key;
+                URL = 'videos/' + result.Key;
                 yield unlink(file.path);
             }
         }
@@ -52,14 +45,14 @@ Router.post('/api/gallery', require_auth_1.requireAuth, (req, res, next) => __aw
             if (req.files && req.files.length > 0) {
                 const file = req.files[0];
                 isResourceUrl = false;
-                imageUrl = file.path;
+                URL = file.path;
                 const result = yield (0, s3_1.uploadFile)(file);
-                imageUrl = 'images/' + result.Key;
+                URL = 'images/' + result.Key;
                 yield unlink(file.path);
             }
         }
         const gallery = gallery_1.Gallery.build({
-            imageUrl, videoUrl, caption, type: modifiedType, isResourceUrl
+            url: URL, caption, type: modifiedType, isResourceUrl
         });
         yield gallery.save();
         res.status(201).send({

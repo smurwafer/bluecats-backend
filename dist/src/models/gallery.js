@@ -8,13 +8,9 @@ const mongoose_1 = __importDefault(require("mongoose"));
 ;
 ;
 const gallerySchema = new mongoose_1.default.Schema({
-    imageUrl: {
+    url: {
         type: String,
-        required: false,
-    },
-    videoUrl: {
-        type: String,
-        required: false,
+        required: true,
     },
     caption: {
         type: String,

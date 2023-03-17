@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+import { NotFoundError } from '../../exceptions/not-found-error';
 import { requireAuth } from '../../middlewares/require-auth';
 import { User } from '../../models/user';
 
@@ -7,20 +8,18 @@ const Router = express.Router();
 Router.delete('/api/user/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = req.params.id;
-        const user = await User.findById(id);
-    
+        const user = await User.findByIdAndDelete(id);
+
         if (!user) {
-            throw new Error('No such user exists!');
+            throw new NotFoundError('User not found');
         }
-    
-        await User.findByIdAndDelete(id);
-    
-        res.status(202).send({
-            message: 'user deleted successfully',
+
+        res.status(204).json({
+            message: 'User deleted successfully',
             user,
         });
-    } catch (err) {
-        next(err);
+    } catch (error) {
+        next(error);
     }
 });
 

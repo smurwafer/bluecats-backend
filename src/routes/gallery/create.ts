@@ -16,40 +16,34 @@ Router.post('/api/gallery', requireAuth, async (req: Request, res: Response, nex
     
         let modifiedType = GalleryType.IMAGE;
         
-        let imageUrl = "", videoUrl = "", isResourceUrl = false;
+        let URL, isResourceUrl = false;
 
-        if (url && url.trim().length > 0) {
-            isResourceUrl = true;
-            if (type == 'video') {
-                videoUrl = url;
-            } else {
-                imageUrl = url;
-            }
-        }
+        if (url && url.trim().length > 0)
+            URL = url, isResourceUrl = true;
     
         if (type === 'video') {
             modifiedType = GalleryType.VIDEO;
-            if (req.files && req.files.length > 0) {
+            if (req.files && req.files.length as number > 0) {
                 const file = (req.files as Express.Multer.File[])[0];
                 isResourceUrl = false;
-                videoUrl = file.path as string;
+                URL = file.path as string;
                 const result = await uploadFile(file);
-                videoUrl = 'videos/' + result.Key;
+                URL = 'videos/' + result.Key;
                 await unlink(file.path);
             }
         } else {
-            if (req.files && req.files.length > 0) {
+            if (req.files && req.files.length as number > 0) {
                 const file = (req.files as Express.Multer.File[])[0];
                 isResourceUrl = false;
-                imageUrl = file.path as string;
+                URL = file.path as string;
                 const result = await uploadFile(file);
-                imageUrl = 'images/' + result.Key;
+                URL = 'images/' + result.Key;
                 await unlink(file.path);
             }
         }
     
         const gallery = Gallery.build({
-            imageUrl, videoUrl, caption, type: modifiedType, isResourceUrl
+            url : URL, caption, type: modifiedType, isResourceUrl
         });
     
         await gallery.save();
