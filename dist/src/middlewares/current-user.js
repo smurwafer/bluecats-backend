@@ -9,13 +9,15 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const currentUser = (req, res, next) => {
     try {
         const authHeader = req.get('Authorization');
-        if (!authHeader)
+        if (!authHeader) {
             return next();
+        }
         const token = authHeader.split(' ')[1];
-        const secretKey = process.env.JWT_SECRET_KEY;
-        const decodedToken = jsonwebtoken_1.default.verify(token, secretKey);
-        if (!decodedToken)
+        const decodedToken = jsonwebtoken_1.default.verify(token, 'secret');
+        if (!decodedToken) {
             return next();
+        }
+        console.log(decodedToken);
         req.currentUser = decodedToken;
         next();
     }

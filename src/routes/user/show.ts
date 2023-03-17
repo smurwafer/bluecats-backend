@@ -1,25 +1,34 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { NotFoundError } from '../../exceptions/not-found-error';
 import { requireAuth } from '../../middlewares/require-auth';
+import { Profile } from '../../models/profile';
 import { User } from '../../models/user';
 
 const Router = express.Router();
 
-Router.get('/api/user/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+Router.get('/api/user/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = req.params.id;
-        const user = await User.findById(id);
-
+        const user = await User.findById(id).populate({
+            path: 'profile',
+            populate: [{
+                path: 'photo',
+                model: 'Gallery',
+            }, {
+                path: 'theme',
+                model: 'Gallery',
+            }]
+        });
+    
         if (!user) {
-            throw new NotFoundError('User not found');
+            throw new Error('User not found!');
         }
-
-        res.status(200).json({
-            message: 'User retrieved successfully',
+    
+        res.status(200).send({
+            message: 'user fetched successfully',
             user,
         });
-    } catch (error) {
-        next(error);
+    } catch (err) {
+        next(err);
     }
 });
 
@@ -30,7 +39,7 @@ Router.get('/api/current-user', requireAuth, async (req: Request, res: Response,
         }
 
         const id = req.currentUser.id;
-        const currentUser = await User.findById(id);
+        const currentUser = await User.findById(id).populate('profile');
 
         if (!currentUser) {
             throw new Error("No such user exists!");
@@ -44,5 +53,23 @@ Router.get('/api/current-user', requireAuth, async (req: Request, res: Response,
         next(err);
     }
 });
+
+// Router.get('/api/profile/:id', async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//         const id = req.params.id;
+//         const profile = await Profile.findOne({ user: id });
+    
+//         if (!profile) {
+//             throw new Error('No such profile exists!');
+//         }
+    
+//         res.status(200).send({
+//             message: 'profile updated successfully',
+//             profile,
+//         });
+//     } catch (err) {
+//         next(err);
+//     }
+// });
 
 export { Router as UserShowRouter };

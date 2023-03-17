@@ -1,5 +1,4 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { NotFoundError } from '../../exceptions/not-found-error';
 import { requireAuth } from '../../middlewares/require-auth';
 import { Gallery } from '../../models/gallery';
 
@@ -9,10 +8,13 @@ Router.delete('/api/gallery/:id', requireAuth, async (req: Request, res: Respons
     try {
         const id = req.params.id;
     
-        const gallery = await Gallery.findByIdAndDelete(id);
+        const gallery = await Gallery.findById(id);
     
-        if (!gallery)
-            throw new NotFoundError('No such gallery exists!');
+        if (!gallery) {
+            throw new Error('No such gallery exists!');
+        }
+    
+        await Gallery.findByIdAndDelete(id);
     
         res.status(202).send({
             message: 'gallery deleted successfully',

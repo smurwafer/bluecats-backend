@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GalleryShowRouter = void 0;
 const express_1 = __importDefault(require("express"));
-const not_found_error_1 = require("../../exceptions/not-found-error");
 const require_auth_1 = require("../../middlewares/require-auth");
 const gallery_1 = require("../../models/gallery");
 const Router = express_1.default.Router();
@@ -23,9 +22,8 @@ Router.get('/api/gallery/:id', require_auth_1.requireAuth, (req, res, next) => _
     try {
         const id = req.params.id;
         const gallery = yield gallery_1.Gallery.findById(id);
-        console.log(id);
         if (!gallery) {
-            throw new not_found_error_1.NotFoundError('No such gallery exists!');
+            throw new Error('No such gallery exists!');
         }
         res.status(200).send({
             message: 'gallery fetched successfully',

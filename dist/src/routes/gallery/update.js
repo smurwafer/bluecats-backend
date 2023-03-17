@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GalleryUpdateRouter = void 0;
 const express_1 = __importDefault(require("express"));
-const not_found_error_1 = require("../../exceptions/not-found-error");
 const require_auth_1 = require("../../middlewares/require-auth");
 const gallery_1 = require("../../models/gallery");
 const gallery_type_1 = require("../../utility/gallery-type");
@@ -23,18 +22,20 @@ exports.GalleryUpdateRouter = Router;
 Router.put('/api/gallery/:id', require_auth_1.requireAuth, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
-        const { url, caption, type } = req.body;
+        const { imageUrl, videoUrl, caption, type } = req.body;
         let modifiedType = gallery_type_1.GalleryType.IMAGE;
-        if (type === 'video')
+        if (type === 'video') {
             modifiedType = gallery_type_1.GalleryType.VIDEO;
+        }
         const gallery = yield gallery_1.Gallery.findById(id);
-        if (!gallery)
-            throw new not_found_error_1.NotFoundError('No such gallery exists!');
+        if (!gallery) {
+            throw new Error('No such gallery exists!');
+        }
         gallery.set({
-            url, caption, type: modifiedType,
+            imageUrl, videoUrl, caption, type: modifiedType,
         });
         yield gallery.save();
-        res.status(200).send({
+        res.status(204).send({
             message: 'gallery updated successfully',
             gallery,
         });

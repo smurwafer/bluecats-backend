@@ -17,26 +17,12 @@ const express_1 = __importDefault(require("express"));
 const comment_1 = require("../../models/comment");
 const Router = express_1.default.Router();
 exports.CommentShowRouter = Router;
-// here id param is "stream id" 
 Router.get('/api/comment/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
         const comments = yield comment_1.Comment.find({
             stream: id,
-        }).populate({
-            path: 'commentor',
-            populate: {
-                path: 'profile',
-                model: 'Profile',
-                populate: [{
-                        path: 'photo',
-                        model: 'Gallery',
-                    }, {
-                        path: 'theme',
-                        model: 'Gallery',
-                    }]
-            }
-        });
+        }).populate('commentor');
         res.status(200).send({
             message: 'comments fetched successfully',
             comments,

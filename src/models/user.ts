@@ -1,13 +1,11 @@
 import mongoose from 'mongoose';
 
 interface UserAttr {
+    userName: string;
     email: string;
-    phone: string;
-    name: string;
     password: string;
-    addresses: string[];
-    image: string;
-    isAdmin: boolean;
+    profile: string;
+    online: boolean;
 }
 
 interface UserModel extends mongoose.Model<UserDoc> {
@@ -15,46 +13,35 @@ interface UserModel extends mongoose.Model<UserDoc> {
 }
 
 interface UserDoc extends mongoose.Document {
+    userName: string;
     email: string;
-    phone: string;
-    name: string;
     password: string;
-    addresses: string[];
-    image: string;
-    isAdmin: boolean;
+    profile: string;
+    online: boolean;
 }
 
 const userSchema = new mongoose.Schema({
+    userName: {
+        type: String,
+        required: true,
+    },
     email: {
         type: String,
-        required: false,
-    },
-    phone: {
-        type: String,
-        required: false,
-    },
-    name: {
-        type: String,
-        required: false,
+        required: true,
     },
     password: {
         type: String,
         required: true,
     },
-    addresses: [{
+    profile: {
         type: String,
-        ref: 'Address',
-        required: false,
-    }],
-    image: {
-        type: String,
-        ref: 'Gallery',
-        required: false,
+        ref: 'Profile',
+        required: true,
     },
-    isAdmin: {
+    online: {
         type: Boolean,
         default: false,
-        required: true,
+        required: false,
     }
 }, {
     toJSON: {

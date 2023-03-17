@@ -23,9 +23,9 @@ exports.CommentCreateRouter = Router;
 Router.post('/api/comment', require_auth_1.requireAuth, comment_validator_1.CommentValidator, validate_request_1.validateRequest, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const { text, stream } = req.body;
+        const { text, id } = req.body;
         const comment = comment_1.Comment.build({
-            text, stream, commentor: (_a = req.currentUser) === null || _a === void 0 ? void 0 : _a.id,
+            text, stream: id, commentor: (_a = req.currentUser) === null || _a === void 0 ? void 0 : _a.id,
         });
         yield comment.save();
         res.status(201).send({

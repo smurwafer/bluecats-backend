@@ -14,25 +14,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserShowRouter = void 0;
 const express_1 = __importDefault(require("express"));
-const not_found_error_1 = require("../../exceptions/not-found-error");
 const require_auth_1 = require("../../middlewares/require-auth");
 const user_1 = require("../../models/user");
 const Router = express_1.default.Router();
 exports.UserShowRouter = Router;
-Router.get('/api/user/:id', require_auth_1.requireAuth, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+Router.get('/api/user/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
-        const user = yield user_1.User.findById(id);
+        const user = yield user_1.User.findById(id).populate('profile');
         if (!user) {
-            throw new not_found_error_1.NotFoundError('User not found');
+            throw new Error('User not found!');
         }
-        res.status(200).json({
-            message: 'User retrieved successfully',
+        res.status(200).send({
+            message: 'user fetched successfully',
             user,
         });
     }
-    catch (error) {
-        next(error);
+    catch (err) {
+        next(err);
     }
 }));
 Router.get('/api/current-user', require_auth_1.requireAuth, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -41,7 +40,7 @@ Router.get('/api/current-user', require_auth_1.requireAuth, (req, res, next) => 
             throw new Error("Not Authorized!");
         }
         const id = req.currentUser.id;
-        const currentUser = yield user_1.User.findById(id);
+        const currentUser = yield user_1.User.findById(id).populate('profile');
         if (!currentUser) {
             throw new Error("No such user exists!");
         }

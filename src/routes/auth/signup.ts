@@ -1,40 +1,69 @@
+import fs from 'fs';
+import util from 'util';
 import express, { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import nodemailer from 'nodemailer';
 import { User } from '../../models/user';
 import { AuthValidator } from '../../validators/auth/auth-validator';
 import { validateRequest } from '../../middlewares/validate-request';
-import { sendMail } from '../../utility/send-mail';
-import { InvalidRequestError } from '../../exceptions/invalid-request-error';
+import { Profile } from '../../models/profile';
+import { uploadFile } from '../../../s3';
+
+const sendGridTransport = require('nodemailer-sendgrid-transport');
 
 const Router = express.Router();
 
 Router.post('/api/auth/signup', AuthValidator, validateRequest, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, phone, name, password, addresses, image, isAdmin } = req.body;
+        const { userName, name, email, age, phone, bio, photo, theme, interests, password } = req.body;
 
-        const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
+        const transporter = nodemailer.createTransport(sendGridTransport({
+            auth: {
+                api_key: process.env.NODEMAILER_API_KEY,
+            }
+        }));
 
-        if (existingUser)
-            throw new InvalidRequestError('User already exists');
-        
+        const existingUser1 = await User.findOne({ email });
+    
+        if (existingUser1) {
+            throw new Error("Email address already exists!");
+        }
+
+        const existingUser2 = await User.findOne({ userName });
+    
+        if (existingUser2) {
+            throw new Error("Username already exists!");
+        }
+    
         const passwordHash = await bcrypt.hash(password, 12);
 
-        const user = new User({
-            email, phone, name, password : passwordHash, addresses, image, isAdmin
+        const profile = Profile.build({
+            name, age, bio, photo, theme, phone, interests,
         });
 
+        await profile.save();
+    
+        const user = User.build({
+            userName, email, password: passwordHash, profile: profile.id, online: false,
+        });
+    
         await user.save();
 
         const secretKey = process.env.JWT_SECRET_KEY as string;
     
-        const token = jwt.sign({ email, phone, id: user.id, isAdmin }, secretKey, {
+        const token = jwt.sign({ email, userName, id: user.id }, secretKey, {
             expiresIn: '24h',
         });
     
         const expiryDate = Math.round(new Date().getTime() / 1000) + 24 * 3600;
 
-        await sendMail(user);
+        await transporter.sendMail({
+            to: email,
+            from: 'manaskumar2808@gmail.com',
+            subject: 'Welcome to Bluecats!',
+            html: '<h1>You have successfully signed up on Bluecats.</h1>',
+        });
 
         res.status(201).send({
             message: 'User signed up successfully',

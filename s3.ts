@@ -28,6 +28,7 @@ export const uploadFile = (file: Express.Multer.File) => {
     return s3.upload(uploadParams).promise();
 }
 
+
 // downloading file from s3
 
 export const getFileStream = (fileKey: Key) => {
