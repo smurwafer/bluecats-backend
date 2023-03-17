@@ -18,7 +18,7 @@ Router.put('/api/stream/:id', requireAuth, StreamValidator, validateRequest, asy
         const { title, description, hashtags, thumbnail, gallery, channel, live } = req.body;
 
         stream.set({
-            title, description, hashtags, thumbnail, gallery, channel, live
+            title, description, hashtags, thumbnail, gallery, channel, live,
         });
 
         await stream.save();

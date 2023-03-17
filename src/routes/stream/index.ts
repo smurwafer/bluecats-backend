@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { requireAuth } from '../../middlewares/require-auth';
 import { Stream } from '../../models/stream';
+import { View } from '../../models/view';
 
 const Router = express.Router();
 

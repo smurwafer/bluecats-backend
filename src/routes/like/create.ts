@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+import socket from '../../../socket';
 import { requireAuth } from '../../middlewares/require-auth';
 import { validateRequest } from '../../middlewares/validate-request';
 import { Like } from '../../models/like';
@@ -18,6 +19,9 @@ Router.post('/api/like', requireAuth, LikeValidator, validateRequest, async (req
         });
     
         await like.save();
+
+        const likes = await Like.find({ stream });
+        socket.getIo().emit('like', (likes));
 
         res.status(201).send({
             message: 'like created successfully',

@@ -30,7 +30,7 @@ Router.post('/api/comment', requireAuth, CommentValidator, validateRequest, asyn
                     model: 'Gallery',
                 }]
             }
-        })
+        });
 
         socket.getIo().emit('comment', (comment));
     

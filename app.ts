@@ -80,6 +80,9 @@ import { SettingCreateRouter } from './src/routes/setting/create';
 import { SettingShowRouter } from './src/routes/setting/show';
 import { SettingUpdateRouter } from './src/routes/setting/update';
 import { SettingDeleteRouter } from './src/routes/setting/delete';
+import { ViewIndexRouter } from './src/routes/view';
+import { ViewCreateStream } from './src/routes/view/create';
+import { ViewDeleteRouter } from './src/routes/view/delete';
 
 const app = express();
 
@@ -197,6 +200,10 @@ app.use(SettingCreateRouter);
 app.use(SettingShowRouter);
 app.use(SettingUpdateRouter);
 app.use(SettingDeleteRouter);
+
+app.use(ViewIndexRouter);
+app.use(ViewCreateStream);
+app.use(ViewDeleteRouter);
 
 app.all('*', (req: Request, res: Response) => {
     console.log(req.path);

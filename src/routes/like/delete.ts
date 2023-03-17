@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+import socket from '../../../socket';
 import { requireAuth } from '../../middlewares/require-auth';
 import { Like } from '../../models/like';
 
@@ -22,6 +23,9 @@ Router.delete('/api/like/:stream', requireAuth, async (req: Request, res: Respon
             liker: userId,
             stream,
         });
+
+        const likes = await Like.find({ stream });
+        socket.getIo().emit('unlike', (likes));
 
         res.status(202).send({
             message: 'like deleted successfully',

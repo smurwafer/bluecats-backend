@@ -61,7 +61,7 @@ const streamSchema = new mongoose.Schema({
     live: {
         type: Boolean,
         required: false,
-    }
+    },
 }, {
     toJSON: {
         transform(doc, ret) {
