@@ -11,25 +11,21 @@ const Router = express.Router();
 
 Router.post('/api/auth/login', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, userName, password } = req.body;
+        const { userNameOrEmailOrPhone, password } = req.body;
     
         const transporter = nodemailer.createTransport(sendGridTransport({
             auth: {
                 api_key: process.env.NODEMAILER_API_KEY,
             }
         }));
-
-        const existingUser = await User.findOne({
-            $or: [{
-                email,
-            }, {
-                userName,
-            }]
-        });
     
+        const existingUser = await User.findOne({ $or: [{ email: userNameOrEmailOrPhone }, { userName: userNameOrEmailOrPhone }, { phone : userNameOrEmailOrPhone }] });
+        
         if (!existingUser) {
             throw new Error("No such user exists!");
         }
+
+        const { userName, email } = existingUser;
 
         const existingProfile = await Profile.findById(existingUser.profile);
 
@@ -61,7 +57,7 @@ Router.post('/api/auth/login', async (req: Request, res: Response, next: NextFun
         res.status(200).send({
             message: 'User logged in successfully',
             token,
-            id: existingUser.id,
+            user: existingUser,
             expiryDate,
         });
     } catch (err) {

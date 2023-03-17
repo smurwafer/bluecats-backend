@@ -1,16 +1,14 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { Comment } from '../../models/comment';
+import { requireAuth } from '../../middlewares/require-auth';
+import { View } from '../../models/view';
 
 const Router = express.Router();
 
-// here id param is "stream id" 
-Router.get('/api/comment/:id', async (req: Request, res: Response, next: NextFunction) => {
+Router.get('/api/view', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const id = req.params.id;
-        const comments = await Comment.find({
-            stream: id,
-        }).populate({
-            path: 'commentor',
+        // /api/view?stream=streamId
+        const views = await View.find({ ...req.query }).populate({
+            path: 'user',
             populate: {
                 path: 'profile',
                 model: 'Profile',
@@ -22,15 +20,14 @@ Router.get('/api/comment/:id', async (req: Request, res: Response, next: NextFun
                     model: 'Gallery',
                 }]
             }
-        }).sort({ 'createdAt': 1 });
-
+        });
         res.status(200).send({
-            message: 'comments fetched successfully',
-            comments,
+            message: 'Views received successfully',
+            views,
         });
     } catch (err) {
         next(err);
     }
 });
 
-export { Router as CommentShowRouter };
+export { Router as ViewIndexRouter };

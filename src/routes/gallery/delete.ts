@@ -4,7 +4,7 @@ import { Gallery } from '../../models/gallery';
 
 const Router = express.Router();
 
-Router.delete('/api/gallery/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+Router.delete('/api/gallery/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = req.params.id;
     

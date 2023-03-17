@@ -1,8 +1,7 @@
 import mongoose from 'mongoose';
 
 interface GalleryAttr {
-    imageUrl: string;
-    videoUrl: string;
+    url: string;
     caption: string;
     type: string;
     isResourceUrl: boolean;
@@ -13,19 +12,14 @@ interface GalleryModel extends mongoose.Model<GalleryDoc> {
 };
 
 interface GalleryDoc extends mongoose.Document {
-    imageUrl: string;
-    videoUrl: string;
+    url: string;
     caption: string;
     type: string;
     isResourceUrl: boolean;
 }
 
 const gallerySchema = new mongoose.Schema({
-    imageUrl: {
-        type: String,
-        required: false,
-    },
-    videoUrl: {
+    url: {
         type: String,
         required: false,
     },

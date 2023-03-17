@@ -44,6 +44,11 @@ import { VoteCreateRouter } from './src/routes/vote/create';
 import { VoteDeleteRouter } from './src/routes/vote/delete';
 import { VoteShowRouter } from './src/routes/vote/show';
 
+import { LikeCreateRoute } from './src/routes/like/create';
+import { LikeDeleteRoute } from './src/routes/like/delete';
+import { LikeIndexRoute } from './src/routes/like';
+import { LikeShowRoute } from './src/routes/like/show';
+
 import { CommentCreateRouter } from './src/routes/comment/create';
 import { CommentUpdateRouter } from './src/routes/comment/update';
 import { CommentDeleteRouter } from './src/routes/comment/delete';
@@ -75,6 +80,9 @@ import { SettingCreateRouter } from './src/routes/setting/create';
 import { SettingShowRouter } from './src/routes/setting/show';
 import { SettingUpdateRouter } from './src/routes/setting/update';
 import { SettingDeleteRouter } from './src/routes/setting/delete';
+import { ViewIndexRouter } from './src/routes/view';
+import { ViewCreateStream } from './src/routes/view/create';
+import { ViewDeleteRouter } from './src/routes/view/delete';
 
 const app = express();
 
@@ -156,6 +164,11 @@ app.use(VoteCreateRouter);
 app.use(VoteDeleteRouter);
 app.use(VoteShowRouter);
 
+app.use(LikeIndexRoute);
+app.use(LikeShowRoute);
+app.use(LikeCreateRoute);
+app.use(LikeDeleteRoute);
+
 app.use(CommentCreateRouter);
 app.use(CommentUpdateRouter);
 app.use(CommentDeleteRouter);
@@ -187,6 +200,10 @@ app.use(SettingCreateRouter);
 app.use(SettingShowRouter);
 app.use(SettingUpdateRouter);
 app.use(SettingDeleteRouter);
+
+app.use(ViewIndexRouter);
+app.use(ViewCreateStream);
+app.use(ViewDeleteRouter);
 
 app.all('*', (req: Request, res: Response) => {
     console.log(req.path);

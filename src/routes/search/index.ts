@@ -33,12 +33,20 @@ Router.get('/api/search', requireAuth, async (req: Request, res: Response, next:
             });
     
         } else if(type === 'user') {
-            const users = await User.find();
-            const profiles = await Profile.find();
+            const users = await User.find().populate({
+                path: 'profile',
+                populate: [{
+                    path: 'photo',
+                    model: 'Gallery',
+                }, {
+                    path: 'theme',
+                    model: 'Gallery',
+                }]
+            });
 
-            fuse = new Fuse([...users, ...profiles], {
+            fuse = new Fuse(users, {
                 includeScore: true,
-                keys: ['userName', 'email', 'name']
+                keys: ['userName', 'email', 'phone']
             });
         }
         

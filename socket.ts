@@ -1,4 +1,4 @@
-import ioserver, { Server } from 'socket.io';
+import { Server } from 'socket.io';
 import * as http from 'http';
 
 let io : Server;

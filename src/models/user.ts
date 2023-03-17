@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 interface UserAttr {
     userName: string;
     email: string;
+    phone: string;
     password: string;
     profile: string;
     online: boolean;
@@ -15,6 +16,7 @@ interface UserModel extends mongoose.Model<UserDoc> {
 interface UserDoc extends mongoose.Document {
     userName: string;
     email: string;
+    phone: string;
     password: string;
     profile: string;
     online: boolean;
@@ -27,7 +29,11 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true,
+        required: false,
+    },
+    phone: {
+        type: String,
+        required: false,
     },
     password: {
         type: String,
@@ -42,7 +48,7 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
         required: false,
-    }
+    },
 }, {
     toJSON: {
         transform(doc, ret) {

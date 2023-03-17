@@ -9,10 +9,14 @@ Router.get('/api/stream/:id', requireAuth, async (req: Request, res: Response, n
         const id = req.params.id;
         const stream = await Stream.findById(id)
             .populate('gallery')
+            .populate('thumbnail')
             .populate({
                 path: 'channel',
                 populate: [{
-                    path: 'gallery',
+                    path: 'photo',
+                    model: 'Gallery',
+                }, {
+                    path: 'theme',
                     model: 'Gallery',
                 }, {
                     path: 'holders',

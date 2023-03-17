@@ -5,10 +5,10 @@ import { GalleryType } from '../../utility/gallery-type';
 
 const Router = express.Router();
 
-Router.put('/api/gallery/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+Router.put('/api/gallery/:id', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = req.params.id;
-        const { imageUrl, videoUrl, caption, type } = req.body;
+        const { url, caption, type } = req.body;
     
         let modifiedType = GalleryType.IMAGE;
     
@@ -23,7 +23,7 @@ Router.put('/api/gallery/:id', requireAuth, async (req: Request, res: Response, 
         }
     
         gallery.set({
-            imageUrl, videoUrl, caption, type: modifiedType,
+            url, caption, type: modifiedType,
         });
     
         await gallery.save();

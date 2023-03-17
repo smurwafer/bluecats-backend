@@ -9,6 +9,10 @@ const validator = [
         .not()
         .isEmpty()
         .withMessage('Type should not be empty'),
+    body('thumbnail')
+        .not()
+        .isEmpty()
+        .withMessage('Thumbnail must be provided'),
     body('gallery')
         .isLength({ min: 1 })
         .withMessage('Atleast 1 gallery item must be added'),

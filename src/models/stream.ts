@@ -5,9 +5,10 @@ export interface StreamAttr {
     description: string;
     type: string;
     gallery: string[];
-    thumbnail: number;
+    thumbnail: string;
     hashtags: string[];
     channel: string;
+    live: boolean;
 };
 
 interface StreamModel extends mongoose.Model<StreamDoc> {
@@ -19,9 +20,10 @@ interface StreamDoc extends mongoose.Document {
     description: string;
     type: string;
     gallery: string[];
-    thumbnail: number;
+    thumbnail: string;
     hashtags: string[];
     channel: string;
+    live: boolean;
 };
 
 const streamSchema = new mongoose.Schema({
@@ -43,7 +45,8 @@ const streamSchema = new mongoose.Schema({
         required: false,
     }],
     thumbnail: {
-        type: Number,
+        type: String,
+        ref: 'Gallery',
         required: true,
     },
     hashtags: [{
@@ -54,6 +57,10 @@ const streamSchema = new mongoose.Schema({
         type: String,
         ref: 'Channel',
         required: true,
+    },
+    live: {
+        type: Boolean,
+        required: false,
     },
 }, {
     toJSON: {

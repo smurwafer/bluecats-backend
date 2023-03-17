@@ -12,7 +12,39 @@ Router.get('/api/follow/:id', requireAuth, async (req: Request, res: Response, n
             $or: [
                 { follower: id },
             ]
-        }).populate('follower').populate('followed').sort({
+        }).populate({
+            path: 'follower',
+            populate: {
+                path: 'profile',
+                model: 'Profile',
+                populate: [
+                    {
+                        path: 'photo',
+                        model: 'Gallery',
+                    },
+                    {
+                        path: 'theme',
+                        model: 'Gallery',
+                    }
+                ],
+            }
+        }).populate({
+            path: 'followed',
+            populate: {
+                path: 'profile',
+                model: 'Profile',
+                populate: [
+                    {
+                        path: 'photo',
+                        model: 'Gallery',
+                    },
+                    {
+                        path: 'theme',
+                        model: 'Gallery',
+                    }
+                ],
+            }
+        }).sort({
             'createdAt': -1,
         });
 

@@ -19,25 +19,31 @@ Router.put('/api/user/:id', requireAuth, async (req: Request, res: Response, nex
             throw new Error('No such user exists!');
         }
 
-        const profile = await Profile.findById(user.profile).populate('image').populate('theme');
+        const profile = await Profile.findById(user.profile);
 
         if (!profile) {
             throw new Error('No profile found!');
         }
-    
-        const { userName, email } = req.body;
 
-        const existingUsers = await User.find({ $or: [{ email }, { userName }] });
+        const { userName, email, phone, name, bio, age, gender, photo, theme, interests } = req.body;
+
+        const existingUsers = await User.find({ $or: [{ email }, { userName }, { phone }] });
         
-        if (existingUsers.length > 0) {
-            throw new Error('Username and/or email are already occupied!');
+        if (existingUsers.length > 1) {
+            throw new Error('Username and/or email and/or phone are already occupied!');
         }
 
         user.set({
-            userName, email
+            userName, email, phone
         });
     
         await user.save();
+
+        profile.set({
+            name, bio, age, gender, photo, theme, interests,
+        });
+    
+        await profile.save();
     
         res.status(204).send({
             message: 'user updated successfully',
@@ -99,10 +105,10 @@ Router.put('/api/profile/:id', requireAuth, async (req: Request, res: Response, 
             throw new Error('No such profile exists!');
         }
     
-        const { name, bio, age, photo, theme, phone, interests } = req.body;
+        const { name, bio, age, gender, photo, theme, interests } = req.body;
     
         profile.set({
-            name, bio, age, photo, theme, phone, interests,
+            name, bio, age, gender, photo, theme, interests,
         });
     
         await profile.save();
